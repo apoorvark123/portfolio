@@ -129,49 +129,39 @@ function typeWriter() {
 document.addEventListener('DOMContentLoaded', typeWriter);
 
 // Contact form handling
-contactForm.addEventListener('submit', async (e) => {
+contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const formData = new FormData(contactForm);
     const data = Object.fromEntries(formData);
     
-    // Show loading state
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-    submitBtn.disabled = true;
+    // Create a simple, direct mailto link
+    const subject = encodeURIComponent(`Portfolio Contact: ${data.subject}`);
+    const body = encodeURIComponent(
+        `Message from Portfolio Website\n\n` +
+        `Name: ${data.name}\n` +
+        `Email: ${data.email}\n` +
+        `Subject: ${data.subject}\n\n` +
+        `Message:\n${data.message}\n\n` +
+        `---\nSent from: ${window.location.href}`
+    );
     
-    try {
-        // Simulate form submission (replace with actual endpoint)
-        await simulateFormSubmission(data);
-        
-        // Show success message
-        showFormMessage('Message sent successfully! I\'ll get back to you soon.', 'success');
-        contactForm.reset();
-        
-    } catch (error) {
-        // Show error message
-        showFormMessage('Failed to send message. Please try again.', 'error');
-    } finally {
-        // Reset button state
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
+    // Create the mailto link
+    const mailtoLink = `mailto:apoorvark123@gmail.com?subject=${subject}&body=${body}`;
+    
+    // Simple, direct approach - just open the link
+    window.location.href = mailtoLink;
+    
+    // Show clear instructions
+    showFormMessage('Opening your email client... Please send the email to complete. If no email client opens, please copy this message and email to: apoorvark123@gmail.com', 'success');
+    
+    // Display the message content for manual copying
+    const messageContent = `Subject: Portfolio Contact: ${data.subject}\n\nName: ${data.name}\nEmail: ${data.email}\n\nMessage: ${data.message}`;
+    console.log('Message to send:', messageContent);
+    
+    // Reset form
+    contactForm.reset();
 });
-
-// Simulate form submission (replace with actual API call)
-function simulateFormSubmission(data) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // Simulate success (90% chance)
-            if (Math.random() > 0.1) {
-                resolve();
-            } else {
-                reject(new Error('Failed to send'));
-            }
-        }, 2000);
-    });
-}
 
 // Show form message
 function showFormMessage(message, type) {

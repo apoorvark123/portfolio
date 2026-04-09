@@ -712,6 +712,41 @@ section {
     border: 1px solid #ef4444;
 }
 
+.direct-email {
+    margin-top: 1.5rem;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+.direct-email p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.direct-email a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.direct-email a:hover {
+    text-decoration: underline;
+}
+
+.direct-email .btn-email {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.direct-email .email-text {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
 /* Footer */
 .footer {
     background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
