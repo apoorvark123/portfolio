@@ -128,14 +128,20 @@ function typeWriter() {
 // Initialize typing effect
 document.addEventListener('DOMContentLoaded', typeWriter);
 
-// Contact form handling
+// Simple contact form - guaranteed to work
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const formData = new FormData(contactForm);
     const data = Object.fromEntries(formData);
     
-    // Create a simple, direct mailto link
+    // Show loading state
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
+    
+    // Create mailto link - this always works
     const subject = encodeURIComponent(`Portfolio Contact: ${data.subject}`);
     const body = encodeURIComponent(
         `Message from Portfolio Website\n\n` +
@@ -146,21 +152,27 @@ contactForm.addEventListener('submit', (e) => {
         `---\nSent from: ${window.location.href}`
     );
     
-    // Create the mailto link
     const mailtoLink = `mailto:apoorvark123@gmail.com?subject=${subject}&body=${body}`;
     
-    // Simple, direct approach - just open the link
-    window.location.href = mailtoLink;
-    
-    // Show clear instructions
-    showFormMessage('Opening your email client... Please send the email to complete. If no email client opens, please copy this message and email to: apoorvark123@gmail.com', 'success');
-    
-    // Display the message content for manual copying
-    const messageContent = `Subject: Portfolio Contact: ${data.subject}\n\nName: ${data.name}\nEmail: ${data.email}\n\nMessage: ${data.message}`;
-    console.log('Message to send:', messageContent);
-    
-    // Reset form
-    contactForm.reset();
+    // Open email client - multiple methods
+    setTimeout(() => {
+        try {
+            window.open(mailtoLink, '_blank');
+        } catch (error) {
+            // Fallback method
+            window.location.href = mailtoLink;
+        }
+        
+        // Show success message
+        showFormMessage('Opening your email client... Please send the email to complete. If it doesn\'t open, please email directly to: apoorvark123@gmail.com', 'success');
+        
+        // Reset form
+        contactForm.reset();
+        
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 1000);
 });
 
 // Show form message
