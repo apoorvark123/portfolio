@@ -125,54 +125,454 @@ function typeWriter() {
     setTimeout(type, 500);
 }
 
-// Initialize typing effect
-document.addEventListener('DOMContentLoaded', typeWriter);
+// Initialize typing effect and animations
+document.addEventListener('DOMContentLoaded', () => {
+    typeWriter();
+    initScrollAnimations();
+});
 
-// Simple contact form - guaranteed to work
-contactForm.addEventListener('submit', (e) => {
+// Scroll-triggered animations
+function initScrollAnimations() {
+    const sections = document.querySelectorAll('.about, .skills, .services, .portfolio, .contact');
+    
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+    
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+}
+
+// Enhanced hover effects for cards
+document.addEventListener('DOMContentLoaded', () => {
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+    
+    // Add floating animation to profile photo
+    const profilePhoto = document.querySelector('.profile-photo');
+    if (profilePhoto) {
+        profilePhoto.style.animation = 'float 3s ease-in-out infinite';
+    }
+});
+
+// Add floating animation keyframes
+const floatingStyles = `
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple 0.6s ease-out;
+    z-index: 1;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+`;
+
+// Add styles to head
+const animationStyleSheet = document.createElement('style');
+animationStyleSheet.textContent = floatingStyles;
+document.head.appendChild(animationStyleSheet);
+
+// IMPRESSIVE PARTICLE ANIMATION SYSTEM
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.init();
+    }
+
+    init() {
+        this.createParticles();
+        this.animate();
+        this.setupMouseTracking();
+    }
+
+    createParticles() {
+        const particleCount = 50;
+        const heroSection = document.querySelector('.hero');
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 4 + 1}px;
+                height: ${Math.random() * 4 + 1}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2});
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1;
+            `;
+            
+            heroSection.appendChild(particle);
+            
+            this.particles.push({
+                element: particle,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 3 + 1
+            });
+        }
+    }
+
+    setupMouseTracking() {
+        document.addEventListener('mousemove', (e) => {
+            this.mouseX = e.clientX;
+            this.mouseY = e.clientY;
+        });
+    }
+
+    animate() {
+        this.particles.forEach(particle => {
+            // Update position
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            
+            // Mouse interaction
+            const dx = this.mouseX - particle.x;
+            const dy = this.mouseY - particle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+                const force = (100 - distance) / 100;
+                particle.vx -= (dx / distance) * force * 0.2;
+                particle.vy -= (dy / distance) * force * 0.2;
+            }
+            
+            // Boundaries
+            if (particle.x < 0 || particle.x > window.innerWidth) particle.vx *= -1;
+            if (particle.y < 0 || particle.y > window.innerHeight) particle.vy *= -1;
+            
+            // Apply position
+            particle.element.style.transform = `translate(${particle.x}px, ${particle.y}px)`;
+        });
+        
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
+// ADVANCED 3D CARD TRANSFORMATIONS
+class Card3D {
+    constructor() {
+        this.cards = document.querySelectorAll('.service-card, .portfolio-item');
+        this.init();
+    }
+
+    init() {
+        this.cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => this.handleMouseMove(e, card));
+            card.addEventListener('mouseleave', () => this.handleMouseLeave(card));
+        });
+    }
+
+    handleMouseMove(e, card) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px) scale(1.05)`;
+        card.style.boxShadow = `${-rotateY}px ${rotateX}px 30px rgba(255, 107, 157, 0.4)`;
+    }
+
+    handleMouseLeave(card) {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
+        card.style.boxShadow = '';
+    }
+}
+
+// MORPHING GRADIENT BACKGROUNDS
+class MorphingGradient {
+    constructor() {
+        this.hero = document.querySelector('.hero');
+        this.gradients = [
+            'linear-gradient(135deg, #ff6b9d 0%, #c9184a 50%, #ff8fab 100%)',
+            'linear-gradient(135deg, #ff8fab 0%, #ff6b9d 50%, #c9184a 100%)',
+            'linear-gradient(135deg, #c9184a 0%, #ff8fab 50%, #ff6b9d 100%)',
+            'linear-gradient(135deg, #ff6b9d 0%, #ffeef8 50%, #c9184a 100%)'
+        ];
+        this.currentGradient = 0;
+        this.init();
+    }
+
+    init() {
+        setInterval(() => this.morph(), 3000);
+    }
+
+    morph() {
+        this.currentGradient = (this.currentGradient + 1) % this.gradients.length;
+        this.hero.style.background = this.gradients[this.currentGradient];
+        this.hero.style.transition = 'background 2s ease';
+    }
+}
+
+// INTERACTIVE CURSOR EFFECTS
+class CursorEffects {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.createCursor();
+        this.setupCursorTracking();
+    }
+
+    createCursor() {
+        this.cursor = document.createElement('div');
+        this.cursor.className = 'custom-cursor';
+        this.cursor.innerHTML = '<div class="cursor-dot"></div><div class="cursor-ring"></div>';
+        document.body.appendChild(this.cursor);
+    }
+
+    setupCursorTracking() {
+        document.addEventListener('mousemove', (e) => {
+            this.cursor.style.left = e.clientX + 'px';
+            this.cursor.style.top = e.clientY + 'px';
+        });
+    }
+}
+
+// TEXT REVEAL ANIMATIONS
+class TextReveal {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.revealText('.hero-title', 'slide-up');
+        this.revealText('.hero-subtitle', 'slide-up', 200);
+        this.revealText('.hero-description', 'slide-up', 400);
+    }
+
+    revealText(selector, animation, delay = 0) {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                element.style.transition = 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, delay);
+        }
+    }
+}
+
+// MAGNETIC HOVER EFFECTS
+class MagneticHover {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => this.handleMagnetic(e, btn));
+            btn.addEventListener('mouseleave', () => this.resetMagnetic(btn));
+        });
+    }
+
+    handleMagnetic(e, btn) {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+    }
+
+    resetMagnetic(btn) {
+        btn.style.transform = 'translate(0, 0) scale(1)';
+    }
+}
+
+// Initialize all impressive effects
+document.addEventListener('DOMContentLoaded', () => {
+    new ParticleSystem();
+    new Card3D();
+    new MorphingGradient();
+    new CursorEffects();
+    new TextReveal();
+    new MagneticHover();
+});
+
+// Add impressive CSS styles
+const impressiveStyles = `
+.particle {
+    mix-blend-mode: screen;
+}
+
+.custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+}
+
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: #ff6b9d;
+    border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+}
+
+.cursor-ring {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff6b9d;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    animation: cursorPulse 2s infinite;
+}
+
+@keyframes cursorPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 0.3; }
+}
+
+.service-card, .portfolio-item {
+    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hero-title, .hero-subtitle, .hero-description {
+    transform-origin: center;
+}
+`;
+
+const impressiveStyleSheet = document.createElement('style');
+impressiveStyleSheet.textContent = impressiveStyles;
+document.head.appendChild(impressiveStyleSheet);
+
+// Simple, working contact form with Formspree
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const formData = new FormData(contactForm);
     const data = Object.fromEntries(formData);
     
-    // Show loading state
+    // Basic validation
+    if (!data.name || !data.email || !data.subject || !data.message) {
+        showFormMessage('Please fill in all fields', 'error');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+        showFormMessage('Please enter a valid email address', 'error');
+        return;
+    }
+    
     const submitBtn = contactForm.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     submitBtn.disabled = true;
     
-    // Create mailto link - this always works
-    const subject = encodeURIComponent(`Portfolio Contact: ${data.subject}`);
-    const body = encodeURIComponent(
-        `Message from Portfolio Website\n\n` +
-        `Name: ${data.name}\n` +
-        `Email: ${data.email}\n` +
-        `Subject: ${data.subject}\n\n` +
-        `Message:\n${data.message}\n\n` +
-        `---\nSent from: ${window.location.href}`
-    );
-    
-    const mailtoLink = `mailto:apoorvark123@gmail.com?subject=${subject}&body=${body}`;
-    
-    // Open email client - multiple methods
-    setTimeout(() => {
-        try {
-            window.open(mailtoLink, '_blank');
-        } catch (error) {
-            // Fallback method
-            window.location.href = mailtoLink;
+    try {
+        // Submit to Formspree
+        const response = await fetch(contactForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            showFormMessage('Message sent successfully! I\'ll get back to you soon.', 'success');
+            contactForm.reset();
+        } else {
+            throw new Error('Form submission failed');
         }
         
-        // Show success message
-        showFormMessage('Opening your email client... Please send the email to complete. If it doesn\'t open, please email directly to: apoorvark123@gmail.com', 'success');
+    } catch (error) {
+        console.error('Error:', error);
         
-        // Reset form
-        contactForm.reset();
+        // Fallback to mailto
+        const subject = encodeURIComponent(`Portfolio Contact: ${data.subject}`);
+        const body = encodeURIComponent(
+            `Message from Portfolio Website\n\n` +
+            `Name: ${data.name}\n` +
+            `Email: ${data.email}\n` +
+            `Subject: ${data.subject}\n\n` +
+            `Message: ${data.message}\n\n` +
+            `---\nSent from: ${window.location.href}`
+        );
         
+        const mailtoLink = `mailto:apoorvark123@gmail.com?subject=${subject}&body=${body}`;
+        window.open(mailtoLink, '_blank');
+        
+        showFormMessage('Opening your email client... Please send the email to complete.', 'success');
+        
+    } finally {
         // Reset button
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-    }, 1000);
+    }
 });
 
 // Show form message
